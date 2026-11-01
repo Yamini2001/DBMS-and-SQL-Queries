@@ -1,0 +1,270 @@
+Assignment 1 Basic DQL commands 
+
+SET1
+
+mysql> create database employees;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> use employees;
+Database changed
+
+mysql>  create table emp(
+    ->  empno int primary key unique,
+    -> empname varchar(50) not null,
+    -> salary varchar(50) not null,
+    ->  hiredate varchar(50) not null,
+    -> comm varchar(50) not null
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+
+mysql> insert into emp(empno,empname,salary,hiredate,comm)
+    -> values
+    -> (1001,"Yamini",89000,"2028-12-09",600),
+    -> (1002,"Shreya",23000,"2023-3-5",653),
+    -> (1003,"Priya",45000,"2024-9-09",324),
+    -> (1004,"Antima",78000,"2021-09-4",123);
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+1. Select all the rows and columns of all the tables.
+mysql> select * from emp;
++-------+---------+--------+------------+------+
+| empno | empname | salary | hiredate   | comm |
++-------+---------+--------+------------+------+
+|  1001 | Yamini  | 89000  | 2028-12-09 | 600  |
+|  1002 | Shreya  | 23000  | 2023-3-5   | 653  |
+|  1003 | Priya   | 45000  | 2024-9-09  | 324  |
+|  1004 | Antima  | 78000  | 2021-09-4  | 123  |
+|  1005 | Antima  | 600    | 2024-7-06  | 123  |
++-------+---------+--------+------------+------+
+5 rows in set (0.00 sec)
+
+2. Print the employees with the new salary which is the 500 more than original salary.
+mysql> update emp set salary = salary + 500;
+Query OK, 5 rows affected (0.01 sec)
+Rows matched: 5  Changed: 5  Warnings: 0
+
+3. Print the empno, name and the annual salary.
+mysql> select empno,empname,salary from emp;
++-------+---------+--------+
+| empno | empname | salary |
++-------+---------+--------+
+|  1001 | Yamini  | 89500  |
+|  1002 | Shreya  | 23500  |
+|  1003 | Priya   | 45500  |
+|  1004 | Antima  | 78500  |
+|  1005 | Antima  | 1100   |
++-------+---------+--------+
+5 rows in set (0.00 sec)
+
+4. Print the empno, name and the annual salary where the salary is hiked by 500.
+
+mysql> select empno,empname,salary from emp;
++-------+---------+--------+
+| empno | empname | salary |
++-------+---------+--------+
+|  1001 | Yamini  | 89500  |
+|  1002 | Shreya  | 23500  |
+|  1003 | Priya   | 45500  |
+|  1004 | Antima  | 78500  |
+|  1005 | Antima  | 1100   |
++-------+---------+--------+
+5 rows in set (0.00 sec)
+
+5. Print the annual salary where where salary is calculated by adding the commission.
+Provide a column alias as “AnnualSal”.
+
+mysql> select (salary+comm) * 12 as AnnualSal from emp;
++-----------+
+| AnnualSal |
++-----------+
+|   1081200 |
+|    289836 |
+|    549888 |
+|    943476 |
+|     14676 |
++-----------+
+5 rows in set (0.00 sec)
+
+
+6. Display name, sal, comm and hiredate for employees with salary less than 1200.
+
+mysql> select empname,salary,comm,hiredate from emp where salary<1200;
++---------+--------+------+-----------+
+| empname | salary | comm | hiredate  |
++---------+--------+------+-----------+
+| Antima  | 1100   | 123  | 2024-7-06 |
++---------+--------+------+-----------+
+1 row in set (0.00 sec)
+
+7. Print the employe and their Job title in the format 
+“Employee1 works as jobtitle1.”
+
+mysql> select concat(empname, ' works as ',jobtitle,'.') as employee_details from emp;
++--------------------------------+
+| employee_details               |
++--------------------------------+
+| Yamini works as Data Engineer. |
+| Shreya works as Data Engineer. |
+| Priya works as Data Engineer.  |
+| Antima works as Data Engineer. |
+| Antima works as Data Engineer. |
++--------------------------------+
+5 rows in set (0.00 sec)
+
+SET2
+
+1. Display different job types without duplicating.
+
+mysql> select distinct jobtitle from emp;
++---------------+
+| jobtitle      |
++---------------+
+| Data Engineer |
++---------------+
+1 row in set (0.00 sec)
+
+2. List employees in department 10 and 30 in alphabetical order of names.
+
+mysql> select empname,department from emp where department in(10,20) order by empname asc;
++---------+------------+
+| empname | department |
++---------+------------+
+| Priya   | 10         |
+| Yamini  | 10         |
++---------+------------+
+2 rows in set (0.00 sec)
+
+
+3. List clerks in department 20
+
+mysql> SELECT empname, department, jobtitle
+    -> FROM emp
+    -> WHERE department = 20
+    -> AND jobtitle = 'Clerks';
++---------+------------+----------+
+| empname | department | jobtitle |
++---------+------------+----------+
+| Shreya  | 20         | Clerks   |
++---------+------------+----------+
+1 row in set (0.00 sec)
+
+4. List employees having ‘LL’ or ‘TH’ in their names
+
+mysql> select empname from emp where empname like '%LL' or empname like '%TH%';
+Empty set (0.00 sec)
+
+5. List employees who do not have manager.
+
+mysql> select empname,jobtitle from emp where jobtitle <> 'Manager';
++---------+---------------+
+| empname | jobtitle      |
++---------+---------------+
+| Yamini  | Data Engineer |
+| Shreya  | Clerks        |
+| Priya   | Data Engineer |
+| Antima  | Data Engineer |
++---------+---------------+
+4 rows in set (0.00 sec)
+
+6. List employees hired in year 81.
+
+mysql> select empname,hiredate from emp where hiredate like '1981%';
++---------+-----------+
+| empname | hiredate  |
++---------+-----------+
+| Priya   | 1981-9-09 |
++---------+-----------+
+1 row in set (0.00 sec)
+
+7. Display first name and join date of the employees who is either Manager or SalesMan.
+
+mysql> select empname,hiredate,jobtitle from emp where jobtitle = "Manager" or jobtitle = "Salesman";
++---------+-----------+----------+
+| empname | hiredate  | jobtitle |
++---------+-----------+----------+
+| Antima  | 2021-09-4 | Manager  |
++---------+-----------+----------+
+1 row in set (0.00 sec)
+
+8. Display details of jobs in the descending order of the title.
+
+mysql> select empname,jobtitle from emp order by jobtitle DESC;
++---------+---------------+
+| empname | jobtitle      |
++---------+---------------+
+| Antima  | Manager       |
+| Yamini  | Data Engineer |
+| Priya   | Data Engineer |
+| Antima  | Data Engineer |
+| Shreya  | Clerks        |
++---------+---------------+
+5 rows in set (0.00 sec)
+
+9. List salesmen having salary greater than commission. Sort on their salaries in descending and names ascending.
+
+mysql> select salary,empname,comm from emp where jobtitle = "Salesman" and salary > comm order by salary desc , empname asc;
+Empty set (0.00 sec)
+
+10. List o/p as ‘SMITH works since 17-DEC-80 as CLERK’ using concatenation operator
+
+mysql> select concat(empname,'works since',hiredate,'as',jobtitle) as employee_details from emp;
++--------------------------------------------+
+| employee_details                           |
++--------------------------------------------+
+| Yaminiworks since2028-12-09asData Engineer |
+| Shreyaworks since2023-3-5asClerks          |
+| Priyaworks since1981-9-09asData Engineer   |
+| Antimaworks since2021-09-4asManager        |
+| Antimaworks since2024-7-06asData Engineer  |
++--------------------------------------------+
+5 rows in set (0.00 sec)
+
+11. List all clerks earning less than 1000 and all managers
+
+mysql> select jobtitle,salary from emp where (jobtitle = "Clerks" and salary<1000) or jobtitle = "Manager";
++----------+--------+
+| jobtitle | salary |
++----------+--------+
+| Manager  | 78500  |
++----------+--------+
+1 row in set (0.00 sec)
+
+12. List employees having annual remuneration > 30000. Annual remuneration should include commission
+
+mysql> SELECT empname, salary, comm,
+    ->        (salary + comm) * 12 AS Annual_Remuneration
+    -> FROM emp
+    -> WHERE (salary + comm) * 12 > 30000;
++---------+--------+------+---------------------+
+| empname | salary | comm | Annual_Remuneration |
++---------+--------+------+---------------------+
+| Yamini  | 89500  | 600  |             1081200 |
+| Shreya  | 23500  | 653  |              289836 |
+| Priya   | 45500  | 324  |              549888 |
+| Antima  | 78500  | 123  |              943476 |
++---------+--------+------+---------------------+
+4 rows in set (0.00 sec)
+
+
+13. Write a query to display the name, job, mgr, hire date, and employee number for each employee, with employee number appearing first. Provide an alias STARTDATE for the HIREDATE column. 
+
+mysql> select empno,empname,jobtitle,hiredate as STARTDATE from emp;
++-------+---------+---------------+------------+
+| empno | empname | jobtitle      | STARTDATE  |
++-------+---------+---------------+------------+
+|  1001 | Yamini  | Data Engineer | 2028-12-09 |
+|  1002 | Shreya  | Clerks        | 2023-3-5   |
+|  1003 | Priya   | Data Engineer | 1981-9-09  |
+|  1004 | Antima  | Manager       | 2021-09-4  |
+|  1005 | Antima  | Data Engineer | 2024-7-06  |
++-------+---------+---------------+------------+
+5 rows in set (0.00 sec)
+
+
+
+
+
+
+

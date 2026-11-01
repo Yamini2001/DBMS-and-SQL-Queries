@@ -1,0 +1,240 @@
+Remote Terminal Unit Database
+
+Create table RTU:
+mysql> select * from RTU;
++--------+-----------+-------------+
+| RTU_ID | Location  | IP_address  |
++--------+-----------+-------------+
+| R101   | BENGALURU | 192.168.0.1 |
+| R102   | MUMBAI    | 192.168.0.2 |
+| R103   | CHENNAI   | 192.168.0.3 |
+| R104   | NEW DELHI | 192.168.0.4 |
+| R105   | KOLKATA   | 192.168.0.5 |
++--------+-----------+-------------+
+5 rows in set (0.00 sec)
+
+
+create table sensors;
+
+mysql> select * from sensors;
++-----------+--------+----------+-------------+---------+----------+
+| SENSOR_ID | RTU_ID | STATUS   | SENSOR_TYPE | REQ_VAL | CURR_VAL |
++-----------+--------+----------+-------------+---------+----------+
+| S801      | R101   | ENABLED  | PRESSURE    |      34 |       33 |
+| S802      | R101   | ENABLED  | TEMPERATURE |      98 |       90 |
+| S803      | R101   | DISABLED | TEMPERATURE |      96 |     NULL |
+| S804      | R102   | ENABLED  | PRESSURE    |      30 |       32 |
+| S805      | R102   | ENABLED  | PRESSURE    |      36 |       32 |
+| S806      | R102   | DISABLED | TEMPERATURE |     108 |     NULL |
+| S807      | R102   | ENABLED  | BAROMETER   |     750 |      660 |
+| S808      | R103   | ENABLED  | BAROMETER   |     780 |      690 |
+| S809      | R103   | ENABLED  | ULTRASONIC  |     510 |      450 |
+| S810      | R104   | DISABLED | ULTRASONIC  |     530 |     NULL |
+| S811      | R104   | ENABLED  | PRESSURE    |      60 |       50 |
++-----------+--------+----------+-------------+---------+----------+
+11 rows in set (0.00 sec)
+
+create table controller;
+
+mysql> select * from controller;
++---------+-----------+
+| USER_ID | sensor_id |
++---------+-----------+
+| U501    | S801      |
+| U501    | S804      |
+| U501    | S806      |
+| U501    | S807      |
+| U501    | S808      |
+| U501    | S809      |
+| U502    | S801      |
+| U502    | S802      |
+| U502    | S804      |
+| U502    | S810      |
+| U503    | S805      |
+| U503    | S806      |
+| U503    | S808      |
+| U503    | S811      |
++---------+-----------+
+14 rows in set (0.00 sec)
+
+
+1. Fetch details of all the sensors which are disabled
+
+mysql> select * from sensors where status = "disabled";
++-----------+--------+----------+-------------+---------+----------+
+| SENSOR_ID | RTU_ID | STATUS   | SENSOR_TYPE | REQ_VAL | CURR_VAL |
++-----------+--------+----------+-------------+---------+----------+
+| S803      | R101   | DISABLED | TEMPERATURE |      96 |     NULL |
+| S806      | R102   | DISABLED | TEMPERATURE |     108 |     NULL |
+| S810      | R104   | DISABLED | ULTRASONIC  |     530 |     NULL |
++-----------+--------+----------+-------------+---------+----------+
+3 rows in set (0.00 sec)
+
+2. List sensors which are having required value less than current value
+
+mysql> select req_val,curr_val from sensors where req_val < curr_val;
++---------+----------+
+| req_val | curr_val |
++---------+----------+
+|      30 |       32 |
++---------+----------+
+1 row in set (0.00 sec)
+3. List sensors which are of type TEMPERATURE and required value greater than 96. Sort on required value field.
+
+mysql> select sensor_type,req_val from sensors where sensor_type = "TEMPERATURE" and req_val > 96;
++-------------+---------+
+| sensor_type | req_val |
++-------------+---------+
+| TEMPERATURE |      98 |
+| TEMPERATURE |     108 |
++-------------+---------+
+2 rows in set (0.00 sec)
+
+4. List sensors which has no current values
+
+mysql> select * from sensors where curr_val is null;
++-----------+--------+----------+-------------+---------+----------+
+| SENSOR_ID | RTU_ID | STATUS   | SENSOR_TYPE | REQ_VAL | CURR_VAL |
++-----------+--------+----------+-------------+---------+----------+
+| S803      | R101   | DISABLED | TEMPERATURE |      96 |     NULL |
+| S806      | R102   | DISABLED | TEMPERATURE |     108 |     NULL |
+| S810      | R104   | DISABLED | ULTRASONIC  |     530 |     NULL |
++-----------+--------+----------+-------------+---------+----------+
+3 rows in set (0.00 sec)
+
+5. List all sensors which are of type TEMPERATURE & PRESSURE.
+
+mysql> select * from sensors where sensor_type = "TEMPERATURE" OR sensor_type = "PRESSURE";
++-----------+--------+----------+-------------+---------+----------+
+| SENSOR_ID | RTU_ID | STATUS   | SENSOR_TYPE | REQ_VAL | CURR_VAL |
++-----------+--------+----------+-------------+---------+----------+
+| S801      | R101   | ENABLED  | PRESSURE    |      34 |       33 |
+| S802      | R101   | ENABLED  | TEMPERATURE |      98 |       90 |
+| S803      | R101   | DISABLED | TEMPERATURE |      96 |     NULL |
+| S804      | R102   | ENABLED  | PRESSURE    |      30 |       32 |
+| S805      | R102   | ENABLED  | PRESSURE    |      36 |       32 |
+| S806      | R102   | DISABLED | TEMPERATURE |     108 |     NULL |
+| S811      | R104   | ENABLED  | PRESSURE    |      60 |       50 |
++-----------+--------+----------+-------------+---------+----------+
+7 rows in set (0.00 sec)
+
+6. List sensors with rtu_id 102 and sensor type pressure and required value greater than 30.
+
+mysql> SELECT RTU_ID, sensor_type, req_val
+    -> FROM sensors
+    -> WHERE RTU_ID = 'R102'
+    -> AND sensor_type = 'PRESSURE'
+    -> AND req_val > 30;
++--------+-------------+---------+
+| RTU_ID | sensor_type | req_val |
++--------+-------------+---------+
+| R102   | PRESSURE    |      36 |
++--------+-------------+---------+
+1 row in set (0.00 sec)
+
+
+
+Write simple queries from the EMP table
+1.	List the emp whose salary between 1200 and 1600.
+
+mysql> select * from emp where salary between 1200 and 1600;
++-------+---------+--------+------------+------+-------------------+------------+
+| empno | empname | salary | hiredate   | comm | jobtitle          | department |
++-------+---------+--------+------------+------+-------------------+------------+
+|  1006 | Suresh  | 1500   | 1990-04-02 | 900  | Software Engineer | 20         |
++-------+---------+--------+------------+------+-------------------+------------+
+1 row in set (0.00 sec)
+
+2.	List the emp where job title is not CLERK, SALESMAN.
+
+mysql> select * from emp where jobtitle <> "Clerks" and jobtitle <> "Salesman";
++-------+---------+--------+------------+------+-------------------+------------+
+| empno | empname | salary | hiredate   | comm | jobtitle          | department |
++-------+---------+--------+------------+------+-------------------+------------+
+|  1001 | Yamini  | 89500  | 2028-12-09 | 600  | Data Engineer     | 10         |
+|  1003 | Priya   | 45500  | 1981-9-09  | 324  | Data Engineer     | 10         |
+|  1004 | Antima  | 78500  | 2021-09-4  | 123  | Manager           | 30         |
+|  1005 | Antima  | 1100   | 2024-7-06  | 123  | Data Engineer     | NULL       |
+|  1006 | Suresh  | 1500   | 1990-04-02 | 900  | Software Engineer | 20         |
++-------+---------+--------+------------+------+-------------------+------------+
+5 rows in set (0.00 sec)
+
+3. List the details of employee whose name has second letter as D.
+
+mysql> select * from emp where empname like '_D%';
+Empty set (0.00 sec)
+
+4. Select the dept details where deptno is not 10. 
+
+mysql> select department from emp where department <> 10;
++------------+
+| department |
++------------+
+| 20         |
+| 30         |
+| 20         |
++------------+
+3 rows in set (0.00 sec)
+
+5. Select the name and deptno of employee whose name starting with ‘J’ or ‘S’ and not in dept 20 or 30.
+
+mysql> SELECT empname, department
+    -> FROM emp
+    -> WHERE (empname LIKE 'J%' OR empname LIKE 'S%')
+    -> AND department NOT IN (20, 30);
+Empty set (0.00 sec)
+
+6.	Select the dept having 5 characters in name ending with S.
+
+mysql>  select department,empname from emp where empname like '____S';
+Empty set (0.00 sec)
+
+
+7.	List the depts which are located in DALLAS or BOSTON.
+
+mysql> select department from emp where deptname = "DALLAS" or deptname = "BOSTON";
++------------+
+| department |
++------------+
+| 10         |
+| 10         |
++------------+
+2 rows in set (0.00 sec)
+
+8.	List the lowsal and highsal from the salgrade table.
+
+mysql> select lowsal,highsal from salgrade;
++--------+---------+
+| lowsal | highsal |
++--------+---------+
+|    700 |    1200 |
+|   1201 |    1400 |
+|   1401 |    2000 |
+|   2001 |    3000 |
+|   3001 |    9999 |
++--------+---------+
+5 rows in set (0.00 sec)
+
+
+9.	List the grade where the low salary is between 1400 and 2500.
+
+mysql> select grade,lowsal from salgrade where lowsal between 1400 and 2500;
++-------+--------+
+| grade | lowsal |
++-------+--------+
+|     3 |   1401 |
+|     4 |   2001 |
++-------+--------+
+2 rows in set (0.00 sec)
+
+10.	List the grade where high salary between 2000 and 5000.
+
+mysql> select grade,highsal from salgrade where highsal between 2000 and 5000;
++-------+---------+
+| grade | highsal |
++-------+---------+
+|     3 |    2000 |
+|     4 |    3000 |
++-------+---------+
+2 rows in set (0.00 sec)
+
