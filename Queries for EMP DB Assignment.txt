@@ -1,0 +1,58 @@
+Queries for EMP DB
+Group by 
+1.	List all aggregates on salary columns for each department excluding dept 10.
+
+mysql> select sum(sal),avg(sal),count(sal),min(sal),max(sal), deptno
+    -> from emp where deptno <> 10 group by deptno;
++----------+--------------+------------+----------+----------+--------+
+| sum(sal) | avg(sal)     | count(sal) | min(sal) | max(sal) | deptno |
++----------+--------------+------------+----------+----------+--------+
+| 90500.00 | 90500.000000 |          1 | 90500.00 | 90500.00 |     23 |
+| 45500.00 | 45500.000000 |          1 | 45500.00 | 45500.00 |      8 |
++----------+--------------+------------+----------+----------+--------+
+2 rows in set (0.00 sec)
+
+2.	List departments where number of employees are more than 4
+
+mysql> SELECT deptno, COUNT(empno)
+    -> FROM emp
+    -> GROUP BY deptno
+    -> HAVING COUNT(empno) > 4;
+Empty set (0.00 sec)
+
+3.	Display jobs with average salary greater than 2000. Order on average salary.
+
+mysql> select avg(sal),job from emp group by job having avg(sal) > 2000;
++--------------+-----------+
+| avg(sal)     | job       |
++--------------+-----------+
+| 90500.000000 | HR        |
+| 45500.000000 | Developer |
+| 30000.000000 | Finance   |
++--------------+-----------+
+3 rows in set (0.00 sec)
+
+4.	List how many employees are their under each manager.
+
+mysql> select mgr,count(empno) from emp where mgr is not null group by mgr;
++------+--------------+
+| mgr  | count(empno) |
++------+--------------+
+|  800 |            1 |
+|  600 |            1 |
++------+--------------+
+2 rows in set (0.00 sec)
+
+
+5.	Display the manager number and the salary of the lowest paid employee for that manager. Exclude anyone whose manager is not known. Exclude any groups where the minimum salary is $800 or less. Sort the output in descending order of salary.
+
+mysql> select mgr,min(sal) from emp where mgr is not null group by mgr having min(sal) > 800 order by min(sal) desc;
++------+----------+
+| mgr  | min(sal) |
++------+----------+
+|  600 | 98000.00 |
+|  800 | 90500.00 |
++------+----------+
+2 rows in set (0.00 sec)
+
+
