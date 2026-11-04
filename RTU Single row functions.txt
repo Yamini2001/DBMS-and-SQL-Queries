@@ -1,0 +1,142 @@
+ RTU 
+Single Row Functions
+
+1.	Write a query which will display username in upper case, role first letter capitalized and all other letters lower case and length of the username.
+
+//Convert upper case
+mysql> select UPPER(ename) from emp;
++--------------+
+| UPPER(ename) |
++--------------+
+| SHREYA       |
+| MAHESH       |
+| YAMINI       |
+| SURESH       |
++--------------+
+4 rows in set (0.00 sec)
+
+//Role first letter capitalized 
+mysql> select CONCAT(UPPER(lEFT(ename,1)),LOWER(substring(ename,2))) as titleName from emp;
++-----------+
+| titleName |
++-----------+
+| Shreya    |
+| Mahesh    |
+| Yamini    |
+| Suresh    |
++-----------+
+4 rows in set (0.00 sec)
+
+//Convert lower case
+mysql> select LOWER(ename) from emp;
++--------------+
+| LOWER(ename) |
++--------------+
+| shreya       |
+| mahesh       |
+| yamini       |
+| suresh       |
++--------------+
+4 rows in set (0.00 sec)
+
+2.	Display percentage of difference between req_value and curr_value as a whole number.
+
+mysql> SELECT
+    ->     ROUND(
+    ->         ((req_val - curr_val) / NULLIF(req_val, 0)) * 100,
+    ->         0
+    ->     ) AS percentage_difference
+    -> FROM sensors;
++-----------------------+
+| percentage_difference |
++-----------------------+
+|                     3 |
+|                     8 |
+|                  NULL |
+|                    -7 |
+|                    11 |
+|                  NULL |
+|                    12 |
+|                    12 |
+|                    12 |
+|                  NULL |
+|                    17 |
++-----------------------+
+11 rows in set (0.02 sec)
+
+
+Group Functions
+1.	List how many sensors are present of type PRESSURE.
+
+mysql> select count(*) from sensors where sensor_type = 'Pressure';
++----------+
+| count(*) |
++----------+
+|        4 |
++----------+
+1 row in set (0.00 sec)
+
+2.	Display number of sensors enabled and disabled. Sort on number of sensors
+
+mysql> SELECT status, COUNT(*) AS total_sensors
+    -> FROM sensors
+    -> WHERE status IN ('ENABLED', 'DISABLED')
+    -> GROUP BY status
+    -> ORDER BY total_sensors ASC;
++----------+---------------+
+| status   | total_sensors |
++----------+---------------+
+| DISABLED |             3 |
+| ENABLED  |             8 |
++----------+---------------+
+2 rows in set (0.00 sec)
+
+3.	List how many sensors are present in each sensor type.
+
+mysql> SELECT sensor_type, COUNT(*) AS total_sensors
+    -> FROM sensors
+    -> GROUP BY sensor_type;
++-------------+---------------+
+| sensor_type | total_sensors |
++-------------+---------------+
+| PRESSURE    |             4 |
+| TEMPERATURE |             3 |
+| BAROMETER   |             2 |
+| ULTRASONIC  |             2 |
++-------------+---------------+
+4 rows in set (0.00 sec)
+
+
+4.	List number of sensors under each RTU_ID.
+
+mysql> SELECT RTU_ID, COUNT(*) AS total_sensors
+    -> FROM sensors
+    -> GROUP BY RTU_ID;
++--------+---------------+
+| RTU_ID | total_sensors |
++--------+---------------+
+| R101   |             3 |
+| R102   |             4 |
+| R103   |             2 |
+| R104   |             2 |
++--------+---------------+
+4 rows in set (0.00 sec)
+
+
+5.	Display how many sensors are controlled by each user. Exclude users who are controlling less than 3 sensors and also restrict users with id “U503”. Sort on user_id.
+
+mysql> SELECT RTU_ID, COUNT(*) AS total_sensors
+    -> FROM sensors
+    -> WHERE RTU_ID <> 'R103'
+    -> GROUP BY RTU_ID
+    -> HAVING COUNT(*) >= 3
+    -> ORDER BY RTU_ID ASC;
++--------+---------------+
+| RTU_ID | total_sensors |
++--------+---------------+
+| R101   |             3 |
+| R102   |             4 |
++--------+---------------+
+2 rows in set (0.00 sec)
+
+
