@@ -1,0 +1,228 @@
+JOINS(EMP-DB)
+1.	List  deptno, dname along with total salary in each department.
+
+mysql> select d.deptid,d.dept_name,sum(e.salary) as total_salary from employee e inner join department d on e.deptid = d.deptid group by d.deptid,d.dept_name;
++--------+-----------+--------------+
+| deptid | dept_name | total_salary |
++--------+-----------+--------------+
+|    101 | Ravi      |        30000 |
+|    102 | Priya     |        45000 |
+|    103 | Amit      |        50000 |
+|    104 | Sneha     |        60000 |
+|    105 | Rahul     |        35000 |
++--------+-----------+--------------+
+5 rows in set (0.00 sec)
+
+2.	List details from emp, dept and salgrade table excluding clerks and employees with grade 1. Order on their names.
+
+mysql> select e.*,d.*,s.*
+    ->  from emp e
+    ->   inner join department d
+    ->  on e.deptno = d.deptno
+    ->  inner join salgrade s
+    ->  on e.salary between s.losal and s.hisal
+    ->  where e.job <> 'Clerk'
+    ->  and s.grade <> 'A'
+    ->  order by e.ename asc;
+Empty set (0.00 sec)
+
+3.	List employee with grade 3 or 4.
+
+mysql> SELECT e.emp_name, e.salary, s.grade
+    ->   FROM employee e
+    ->  INNER JOIN salgrade s
+    ->   ON e.salary BETWEEN s.losal AND s.hisal WHERE s.grade IN ('B', 'C');
++----------+--------+-------+
+| emp_name | salary | grade |
++----------+--------+-------+
+| Ravi     | 30000  | B     |
+| Priya    | 45000  | C     |
+| Amit     | 50000  | C     |
+| Sneha    | 60000  | C     |
+| Rahul    | 35000  | B     |
+| Febin    | 28000  | B     |
++----------+--------+-------+
+6 rows in set (0.00 sec)
+
+4.	List employees located in dallas.
+
+mysql> select emp_id,emp_name,location from employee where location = 'Dallas';
++--------+----------+----------+
+| emp_id | emp_name | location |
++--------+----------+----------+
+|     10 | Ravi     | Dallas   |
+|     10 | Amit     | Dallas   |
+|     50 | Febin    | Dallas   |
++--------+----------+----------+
+3 rows in set (0.00 sec)
+
+5.	List employee and department details for department 30 and 40.
+
+
+mysql>  SELECT e.emp_id, e.emp_name, e.salary,
+    ->  d.deptno, d.dept_name
+    ->  FROM employee e
+    ->  INNER JOIN department d
+    ->  ON e.deptid = d.deptid
+    ->  WHERE d.deptno IN (30, 40);
++--------+----------+--------+--------+-----------+
+| emp_id | emp_name | salary | deptno | dept_name |
++--------+----------+--------+--------+-----------+
+|     10 | Amit     | 50000  |     30 | Amit      |
+|     30 | Sneha    | 60000  |     40 | Sneha     |
++--------+----------+--------+--------+-----------+
+2 rows in set (0.00 sec)
+
+6.	List all employees who earn less than their managers. List their managers details also.
+
+mysql> SELECT
+    ->     e.EMPNO AS employee_id,
+    ->     e.ENAME AS employee_name,
+    ->     e.salary AS employee_salary,
+    ->     m.EMPNO AS manager_id,
+    ->     m.ENAME AS manager_name,
+    ->     m.salary AS manager_salary
+    -> FROM emp e
+    -> INNER JOIN emp m
+    ->     ON e.MGR = m.EMPNO
+    -> WHERE e.salary < m.salary;
++-------------+---------------+-----------------+------------+--------------+----------------+
+| employee_id | employee_name | employee_salary | manager_id | manager_name | manager_salary |
++-------------+---------------+-----------------+------------+--------------+----------------+
+|        1004 | Shreya        |        90500.00 |        800 | Rahul        |      110000.00 |
+|        1005 | Mahesh        |        98000.00 |        600 | Amit         |      120000.00 |
++-------------+---------------+-----------------+------------+--------------+----------------+
+2 rows in set (0.00 sec)
+
+
+7.	Find all employees who joined the company before their manager.
+
+mysql> SELECT
+    ->     e.EMPNO,
+    ->     e.ENAME,
+    ->     e.HIREDATE,
+    ->     e.MGR,
+    ->     m.EMPNO AS manager_id,
+    ->     m.ENAME AS manager_name,
+    ->     m.HIREDATE AS manager_hiredate
+    -> FROM emp e
+    -> INNER JOIN emp m
+    -> ON e.MGR = m.EMPNO;
++-------+--------+------------+------+------------+--------------+------------------+
+| EMPNO | ENAME  | HIREDATE   | MGR  | manager_id | manager_name | manager_hiredate |
++-------+--------+------------+------+------------+--------------+------------------+
+|  1004 | Shreya | 2025-03-12 |  800 |        800 | Rahul        | 2024-02-15       |
+|  1005 | Mahesh | 2026-04-12 |  600 |        600 | Amit         | 2024-01-10       |
++-------+--------+------------+------+------------+--------------+------------------+
+2 rows in set (0.00 sec)
+
+
+
+JOINS(RTU-DB)
+1.	Display RTU details along with sensor details for all RTU's
+
+mysql>  select r.rtu_id,r.location,r.IP_address,s.sensor_id from rtu r inner join sensors s on r.rtu_id = s.rtu_id;
++--------+-----------+-------------+-----------+
+| rtu_id | location  | IP_address  | sensor_id |
++--------+-----------+-------------+-----------+
+| R101   | BENGALURU | 192.168.0.1 | S801      |
+| R101   | BENGALURU | 192.168.0.1 | S802      |
+| R101   | BENGALURU | 192.168.0.1 | S803      |
+| R102   | MUMBAI    | 192.168.0.2 | S804      |
+| R102   | MUMBAI    | 192.168.0.2 | S805      |
+| R102   | MUMBAI    | 192.168.0.2 | S806      |
+| R102   | MUMBAI    | 192.168.0.2 | S807      |
+| R103   | CHENNAI   | 192.168.0.3 | S808      |
+| R103   | CHENNAI   | 192.168.0.3 | S809      |
+| R104   | NEW DELHI | 192.168.0.4 | S810      |
+| R104   | NEW DELHI | 192.168.0.4 | S811      |
++--------+-----------+-------------+-----------+
+11 rows in set (0.00 sec)
+
+2.	Display user details and sensor details controlled by each user.
+
+mysql> SELECT
+    ->     u.USER_ID,
+    ->     u.USER_NAME,
+    ->     u.ROLE,
+    ->     s.SENSOR_ID,
+    ->     s.RTU_ID,
+    ->     s.STATUS,
+    ->     s.SENSOR_TYPE,
+    ->     s.REQ_VAL,
+    ->     s.CURR_VAL
+    -> FROM users u
+    -> INNER JOIN controller c
+    ->     ON u.USER_ID = c.USER_ID
+    -> INNER JOIN sensors s
+    ->     ON c.sensor_id = s.SENSOR_ID
+    -> ORDER BY u.USER_NAME ASC;
++---------+-----------+------------+-----------+--------+----------+-------------+---------+----------+
+| USER_ID | USER_NAME | ROLE       | SENSOR_ID | RTU_ID | STATUS   | SENSOR_TYPE | REQ_VAL | CURR_VAL |
++---------+-----------+------------+-----------+--------+----------+-------------+---------+----------+
+| U502    | PARTHIV   | ADMINISTER | S801      | R101   | ENABLED  | PRESSURE    |      34 |       33 |
+| U502    | PARTHIV   | ADMINISTER | S802      | R101   | ENABLED  | TEMPERATURE |      98 |       90 |
+| U502    | PARTHIV   | ADMINISTER | S804      | R102   | ENABLED  | PRESSURE    |      30 |       32 |
+| U502    | PARTHIV   | ADMINISTER | S810      | R104   | DISABLED | ULTRASONIC  |     530 |     NULL |
+| U501    | PRAKASH   | MONITOR    | S801      | R101   | ENABLED  | PRESSURE    |      34 |       33 |
+| U501    | PRAKASH   | MONITOR    | S804      | R102   | ENABLED  | PRESSURE    |      30 |       32 |
+| U501    | PRAKASH   | MONITOR    | S806      | R102   | DISABLED | TEMPERATURE |     108 |     NULL |
+| U501    | PRAKASH   | MONITOR    | S807      | R102   | ENABLED  | BAROMETER   |     750 |      660 |
+| U501    | PRAKASH   | MONITOR    | S808      | R103   | ENABLED  | BAROMETER   |     780 |      690 |
+| U501    | PRAKASH   | MONITOR    | S809      | R103   | ENABLED  | ULTRASONIC  |     510 |      450 |
+| U503    | SMITHA    | ADMINISTER | S805      | R102   | ENABLED  | PRESSURE    |      36 |       32 |
+| U503    | SMITHA    | ADMINISTER | S806      | R102   | DISABLED | TEMPERATURE |     108 |     NULL |
+| U503    | SMITHA    | ADMINISTER | S808      | R103   | ENABLED  | BAROMETER   |     780 |      690 |
+| U503    | SMITHA    | ADMINISTER | S811      | R104   | ENABLED  | PRESSURE    |      60 |       50 |
++---------+-----------+------------+-----------+--------+----------+-------------+---------+----------+
+14 rows in set (0.00 sec)
+
+3.	Display user details and sensor details controlled by each user alongwith RTU details.
+
+mysql> SELECT
+    ->     u.USER_ID,
+    ->     u.USER_NAME,
+    ->     u.ROLE,
+    ->     s.SENSOR_ID,
+    ->     s.RTU_ID,
+    ->     s.STATUS,
+    ->     s.SENSOR_TYPE,
+    ->     s.REQ_VAL,
+    ->     s.CURR_VAL,
+    ->     r.Location,
+    ->     r.IP_address
+    -> FROM users u
+    -> INNER JOIN controller c
+    ->     ON u.USER_ID = c.USER_ID
+    -> INNER JOIN sensors s
+    ->     ON c.sensor_id = s.SENSOR_ID
+    -> INNER JOIN rtu r
+    ->     ON s.RTU_ID = r.RTU_ID
+    -> ORDER BY u.USER_NAME ASC;
++---------+-----------+------------+-----------+--------+----------+-------------+---------+----------+-----------+-------------+
+| USER_ID | USER_NAME | ROLE       | SENSOR_ID | RTU_ID | STATUS   | SENSOR_TYPE | REQ_VAL | CURR_VAL | Location  | IP_address  |
++---------+-----------+------------+-----------+--------+----------+-------------+---------+----------+-----------+-------------+
+| U502    | PARTHIV   | ADMINISTER | S801      | R101   | ENABLED  | PRESSURE    |      34 |       33 | BENGALURU | 192.168.0.1 |
+| U502    | PARTHIV   | ADMINISTER | S802      | R101   | ENABLED  | TEMPERATURE |      98 |       90 | BENGALURU | 192.168.0.1 |
+| U502    | PARTHIV   | ADMINISTER | S804      | R102   | ENABLED  | PRESSURE    |      30 |       32 | MUMBAI    | 192.168.0.2 |
+| U502    | PARTHIV   | ADMINISTER | S810      | R104   | DISABLED | ULTRASONIC  |     530 |     NULL | NEW DELHI | 192.168.0.4 |
+| U501    | PRAKASH   | MONITOR    | S801      | R101   | ENABLED  | PRESSURE    |      34 |       33 | BENGALURU | 192.168.0.1 |
+| U501    | PRAKASH   | MONITOR    | S804      | R102   | ENABLED  | PRESSURE    |      30 |       32 | MUMBAI    | 192.168.0.2 |
+| U501    | PRAKASH   | MONITOR    | S806      | R102   | DISABLED | TEMPERATURE |     108 |     NULL | MUMBAI    | 192.168.0.2 |
+| U501    | PRAKASH   | MONITOR    | S807      | R102   | ENABLED  | BAROMETER   |     750 |      660 | MUMBAI    | 192.168.0.2 |
+| U501    | PRAKASH   | MONITOR    | S808      | R103   | ENABLED  | BAROMETER   |     780 |      690 | CHENNAI   | 192.168.0.3 |
+| U501    | PRAKASH   | MONITOR    | S809      | R103   | ENABLED  | ULTRASONIC  |     510 |      450 | CHENNAI   | 192.168.0.3 |
+| U503    | SMITHA    | ADMINISTER | S805      | R102   | ENABLED  | PRESSURE    |      36 |       32 | MUMBAI    | 192.168.0.2 |
+| U503    | SMITHA    | ADMINISTER | S806      | R102   | DISABLED | TEMPERATURE |     108 |     NULL | MUMBAI    | 192.168.0.2 |
+| U503    | SMITHA    | ADMINISTER | S808      | R103   | ENABLED  | BAROMETER   |     780 |      690 | CHENNAI   | 192.168.0.3 |
+| U503    | SMITHA    | ADMINISTER | S811      | R104   | ENABLED  | PRESSURE    |      60 |       50 | NEW DELHI | 192.168.0.4 |
++---------+-----------+------------+-----------+--------+----------+-------------+---------+----------+-----------+-------------+
+14 rows in set (0.01 sec)
+
+4.	List how many sensors are controlled by each user. Display user_name and count. Sort on count.
+
+
+
+5.	Display user details who are controlling sensor_type TEMPERATURE
+6.	Display user details that is controlling sensor S801 along with sensor details and location.
+
